@@ -29,7 +29,11 @@ class Calculator(BaseModel):
         title="Operation", description="Enter operation", examples=["+", "-", "*", "/"]
     )
 
-
+    @field_validator("operation")
+    def validate_operator(cls, v, values, **kwargs):
+        if v == Operators.div and values.data["second_number"] == 0:
+            raise ValueError("Cannot divide by zero")
+        return v
 # Calculator Route
 @app.post("/calculate")
 async def calculate(calculator: Calculator, response: Response):
